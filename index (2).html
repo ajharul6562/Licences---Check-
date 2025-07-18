@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title></title>
+</head>
+
+<body>
+  
+</body>
+
+</html><!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <title>বাংলাদেশ লাইসেন্স যাচাই পোর্টাল</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/html5-qrcode"></script>
+</head>
+<body class="bg-gray-100 min-h-screen text-gray-800">
+
+  <!-- Header -->
+  <header class="bg-white shadow py-4">
+    <div class="max-w-6xl mx-auto px-4 flex justify-between items-center">
+      <h1 class="text-xl font-bold text-green-700">গণপ্রজাতন্ত্রী বাংলাদেশ সরকার</h1>
+      <button onclick="showLogin()" class="bg-green-600 text-white px-4 py-1 rounded">Admin Login</button>
+    </div>
+  </header>
+
+  <!-- Main License Checker -->
+  <main class="py-10 px-4 max-w-2xl mx-auto">
+    <div class="bg-white p-6 rounded-xl shadow">
+      <h2 class="text-2xl font-bold text-center text-green-800 mb-4">লাইসেন্স যাচাই</h2>
+
+      <input id="licenseInput" type="text" placeholder="লাইসেন্স নম্বর লিখুন"
+        class="w-full border px-4 py-3 rounded mb-4" />
+
+      <button onclick="checkLicense()" class="bg-green-600 text-white px-4 py-2 rounded w-full">
+        যাচাই করুন
+      </button>
+
+      <div id="result" class="mt-6 hidden bg-gray-100 p-4 rounded"></div>
+
+      <div class="mt-6 text-center">
+        <h3 class="font-semibold">📷 QR কোড স্ক্যান:</h3>
+        <div id="qr-reader" style="width: 300px; margin: auto;"></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Admin Login Modal -->
+  <div id="loginModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-lg p-6 w-96">
+      <h3 class="text-xl font-bold mb-4 text-center">🔐 অ্যাডমিন লগইন</h3>
+      <input id="adminPass" type="password" placeholder="পাসওয়ার্ড দিন"
+             class="w-full border px-4 py-2 rounded mb-4" />
+      <button onclick="adminLogin()" class="bg-green-600 text-white px-4 py-2 w-full rounded">
+        লগইন
+      </button>
+    </div>
+  </div>
+
+  <!-- Admin Panel -->
+  <div id="adminPanel" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+    <div class="bg-white p-6 rounded-lg w-[95%] max-w-2xl">
+      <h2 class="text-xl font-bold mb-4 text-green-800 text-center">🧑‍💼 অ্যাডমিন লাইসেন্স ম্যানেজমেন্ট</h2>
+
+      <input id="newLicense" type="text" placeholder="লাইসেন্স নম্বর" class="border px-3 py-2 rounded w-full mb-2" />
+      <input id="newOwner" type="text" placeholder="মালিকের নাম" class="border px-3 py-2 rounded w-full mb-2" />
+      <input id="newType" type="text" placeholder="লাইসেন্স ধরন" class="border px-3 py-2 rounded w-full mb-2" />
+      <input id="newIssue" type="date" class="border px-3 py-2 rounded w-full mb-2" />
+      <input id="newExpiry" type="date" class="border px-3 py-2 rounded w-full mb-4" />
+
+      <button onclick="addLicense()" class="bg-blue-600 text-white px-4 py-2 rounded w-full">
+        নতুন লাইসেন্স যোগ করুন
+      </button>
+      <button onclick="hideAdmin()" class="mt-3 text-sm text-red-600 underline w-full">প্রস্থান</button>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="text-center py-6 text-sm text-gray-500">
+    &copy; ২০২৫ বাংলাদেশ সরকার | ডিজিটাল সার্ভিস বিভাগ
+  </footer>
+
+  <script>
+    let licenses = [
+      {
+        licenseNumber: "DK0897294CH0874",
+        ownerName: "আজহারুল ইসলাম",
+        licenseType: "ড্রাইভিং লাইসেন্স",
+        issueDate: "2020-01-01",
+        expiryDate: "2025-01-01",
+        status: "বৈধ"
+      }
+    ];
+
+    const adminPassword = "986562"; // আপনি চাইলে এটা পরিবর্তন করতে পারেন
+
+    function checkLicense() {
+      const input = document.getElementById("licenseInput").value.trim();
+      const resultDiv = document.getElementById("result");
+      const found = licenses.find(l => l.licenseNumber === input);
+
+      if (found) {
+        resultDiv.innerHTML = `
+          <p><strong>নাম:</strong> ${found.ownerName}</p>
+          <p><strong>লাইসেন্স নম্বর:</strong> ${found.licenseNumber}</p>
+          <p><strong>ধরন:</strong> ${found.licenseType}</p>
+          <p><strong>ইস্যু:</strong> ${found.issueDate}</p>
+          <p><strong>মেয়াদ শেষ:</strong> ${found.expiryDate}</p>
+          <p><strong>স্ট্যাটাস:</strong> ✅ ${found.status}</p>
+        `;
+      } else {
+        resultDiv.innerHTML = `<p class="text-red-600">❌ লাইসেন্স খুঁজে পাওয়া যায়নি।</p>`;
+      }
+      resultDiv.classList.remove("hidden");
+    }
+
+    function onScanSuccess(decodedText) {
+      document.getElementById("licenseInput").value = decodedText;
+      checkLicense();
+    }
+
+    new Html5QrcodeScanner("qr-reader", { fps: 10, qrbox: 250 }).render(onScanSuccess);
+
+    function showLogin() {
+      document.getElementById("loginModal").classList.remove("hidden");
+    }
+
+    function adminLogin() {
+      const pass = document.getElementById("adminPass").value;
+      if (pass === adminPassword) {
+        document.getElementById("loginModal").classList.add("hidden");
+        document.getElementById("adminPanel").classList.remove("hidden");
+      } else {
+        alert("ভুল পাসওয়ার্ড!");
+      }
+    }
+
+    function hideAdmin() {
+      document.getElementById("adminPanel").classList.add("hidden");
+    }
+
+    function addLicense() {
+      const license = {
+        licenseNumber: document.getElementById("newLicense").value.trim(),
+        ownerName: document.getElementById("newOwner").value.trim(),
+        licenseType: document.getElementById("newType").value.trim(),
+        issueDate: document.getElementById("newIssue").value,
+        expiryDate: document.getElementById("newExpiry").value,
+        status: "বৈধ"
+      };
+      if (license.licenseNumber && license.ownerName) {
+        licenses.push(license);
+        alert("✅ নতুন লাইসেন্স যোগ হয়েছে!");
+        hideAdmin();
+      } else {
+        alert("⚠️ সব ঘর পূরণ করুন!");
+      }
+    }
+  </script>
+</body>
+</html>
